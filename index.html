@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open When Letters</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* --- EDITABLE COLORS --- */
+            --bg-color: #fff5f7;
+            --primary-pink: #ffafcc;
+            --secondary-pink: #ff8fab;
+            --accent-cream: #fdf0d5;
+            --text-dark: #4a4a4a;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --shadow: 0 8px 32px 0 rgba(255, 182, 193, 0.37);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            overflow-x: hidden;
+            transition: background 0.5s ease;
+        }
+
+        /* --- BACKGROUND ANIMATION --- */
+        .floating-hearts {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: -1;
+        }
+
+        .heart {
+            position: absolute;
+            color: var(--primary-pink);
+            font-size: 20px;
+            animation: float 6s linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* --- PASSWORD PAGE --- */
+        #lock-screen {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, var(--accent-cream), var(--primary-pink));
+            position: fixed; width: 100%; z-index: 999;
+            transition: transform 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .lock-box {
+            background: var(--glass-bg);
+            padding: 2rem; border-radius: 20px;
+            backdrop-filter: blur(8px);
+            text-align: center; box-shadow: var(--shadow);
+            width: 90%; max-width: 400px;
+        }
+
+        input {
+            width: 100%; padding: 12px; margin: 15px 0;
+            border: 2px solid var(--primary-pink);
+            border-radius: 10px; outline: none; text-align: center;
+        }
+
+        button {
+            background: var(--secondary-pink);
+            color: white; border: none; padding: 10px 25px;
+            border-radius: 20px; cursor: pointer; font-weight: bold;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        button:hover { transform: scale(1.05); box-shadow: 0 0 15px var(--secondary-pink); }
+
+        /* --- MAIN WEBSITE --- */
+        #main-content { display: none; padding: 20px; max-width: 1200px; margin: 0 auto; }
+
+        header { text-align: center; padding: 40px 0; }
+        .title { font-family: 'Dancing Script', cursive; font-size: 3rem; color: var(--secondary-pink); }
+        .sub-title { font-size: 1.1rem; opacity: 0.8; margin-top: 10px; }
+
+        .anniversary-counter {
+            background: var(--glass-bg);
+            margin: 20px auto; padding: 15px; border-radius: 15px;
+            display: inline-block; font-weight: bold; box-shadow: var(--shadow);
+        }
+
+        /* --- SEARCH & TOOLS --- */
+        .controls {
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 30px;
+        }
+
+        #searchBar { width: 100%; max-width: 400px; margin-bottom: 0; }
+
+        /* --- GRID --- */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 20px;
+        }
+
+        .category-card {
+            background: white; padding: 20px; border-radius: 20px;
+            text-align: center; cursor: pointer; transition: 0.3s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 2px solid transparent;
+        }
+
+        .category-card:hover {
+            transform: translateY(-5px); border-color: var(--primary-pink);
+        }
+
+        .icon { font-size: 2.5rem; margin-bottom: 10px; display: block; }
+
+        /* --- MODAL --- */
+        .modal {
+            display: none; position: fixed; top: 0; left: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.5);
+            z-index: 1000; backdrop-filter: blur(5px);
+            justify-content: center; align-items: center;
+        }
+
+        .modal-content {
+            background: var(--bg-color);
+            width: 90%; max-width: 500px;
+            padding: 30px; border-radius: 30px;
+            position: relative; max-height: 80vh; overflow-y: auto;
+            text-align: center; box-shadow: var(--shadow);
+        }
+
+        .letter-text {
+            font-family: 'Quicksand', sans-serif;
+            line-height: 1.8; font-size: 1.1rem;
+            white-space: pre-line; margin-top: 20px;
+        }
+
+        .close-btn { position: absolute; top: 15px; right: 20px; font-size: 1.5rem; cursor: pointer; }
+        .nav-btns { display: flex; justify-content: space-between; margin-top: 20px; }
+
+        /* --- PROGRESS BAR --- */
+        .progress-container { width: 100%; background: #eee; height: 10px; border-radius: 5px; margin: 20px 0; }
+        #progress-bar { width: 0%; height: 100%; background: var(--secondary-pink); border-radius: 5px; transition: 0.5s; }
+
+        footer { text-align: center; padding: 40px; font-size: 0.9rem; opacity: 0.7; }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            .title { font-size: 2rem; }
+            .category-grid { grid-template-columns: 1fr 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="floating-hearts" id="heartContainer"></div>
+
+    <!-- 1. PASSWORD SCREEN -->
+    <section id="lock-screen">
+        <div class="lock-box">
+            <h2 style="font-family: 'Dancing Script'; margin-bottom: 10px;">Hello My Love...</h2>
+            <p>Enter our special password to enter</p>
+            <input type="password" id="passwordInput" placeholder="Our Secret Word">
+            <button onclick="checkPassword()">Unlock My Heart</button>
+            <p id="error-msg" style="color: #ff4d6d; margin-top: 10px; display: none;">That's not it, baby. Try again! ❤️</p>
+        </div>
+    </section>
+
+    <!-- 2. MAIN CONTENT -->
+    <main id="main-content">
+        <header>
+            <div class="title" id="mainTitle">For My Love</div>
+            <div class="sub-title">A Place Made Only For You</div>
+            
+            <div class="anniversary-counter" id="daysCounter">Loading days...</div>
+            
+            <div class="progress-container">
+                <div id="progress-bar"></div>
+            </div>
+            <p id="statsText">0% of letters read</p>
+        </header>
+
+        <div class="controls">
+            <input type="text" id="searchBar" placeholder="Search a mood..." onkeyup="filterCategories()">
+            <button onclick="openRandomLetter()">Surprise Me! 🎲</button>
+            <button onclick="toggleMusic()" id="musicBtn">🎵 Play Music</button>
+        </div>
+
+        <div class="category-grid" id="categoryGrid">
+            <!-- JavaScript will populate this -->
+        </div>
+
+        <footer>
+            Made with love ❤️<br>
+            <span id="footerNames">You & Me Forever</span>
+        </footer>
+    </main>
+
+    <!-- 3. LETTER MODAL -->
+    <div class="modal" id="letterModal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal()">&times;</span>
+            <h2 id="modalTitle" style="font-family: 'Dancing Script'; color: var(--secondary-pink);"></h2>
+            <div class="letter-text" id="letterBody"></div>
+            <div class="nav-btns">
+                <button onclick="prevLetter()">← Back</button>
+                <button onclick="markAsRead()" id="readBtn">Mark as Read ✓</button>
+                <button onclick="nextLetter()">Next →</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Background Music (Editable Link) -->
+    <audio id="bgMusic" loop>
+        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        /* 
+           =========================================
+           --- EDIT YOUR CONTENT BELOW ---
+           =========================================
+        */
+        const CONFIG = {
+            password: "love", // CHANGE THIS
+            names: "Us Forever",
+            anniversaryDate: "2023-05-15", // YYYY-MM-DD format
+            musicLink: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
+            categories: [
+                { id: 0, name: "Open When You Miss Me", icon: "🥺", letters: [
+                    "I miss you more than words can say. Close your eyes, I'm hugging you right now.",
+                    "Missing you is my heart's way of reminding me how much I love you. Can't wait to see you.",
+                    "If you're reading this, I'm probably thinking about you at this exact second too.",
+                    "Look at the moon. We are both under the same sky, breathing the same air. I'm right there with you.",
+                    "Missing you is like a game... but one where I really want to win a hug from you."
+                    /* Add 45 more here... */
+                ]},
+                { id: 1, name: "Open When You’re Sad", icon: "🫂", letters: [
+                    "I wish I could be there to wipe your tears. Remember you are the strongest man I know.",
+                    "It’s okay to not be okay. I am your safe space, always. Come to me.",
+                    "Hey handsome, don't let the world dull your sparkle. You are my sunshine.",
+                    "I made a list of why you're amazing: 1. You're kind. 2. You're mine. 3. You're perfect.",
+                    "Eat a chocolate, take a nap, and remember I love you more than anything."
+                ]},
+                { id: 2, name: "Open When You’re Angry", icon: "😤", letters: [
+                    "Deep breaths. Don't let them get to you. You are better than whatever is bothering you.",
+                    "I'm on your side. Even if the whole world is against you, I'm your teammate.",
+                    "Go play a game, vent it out, and then come back to me. I'll be waiting with kisses.",
+                    "If someone was mean to you, tell me their name. I'll... give them a very stern look!",
+                    "You're cute when you're grumpy, but I prefer when you're happy. Let's let it go."
+                ]},
+                { id: 3, name: "Open When You’re Stressed", icon: "😫", letters: [
+                    "One step at a time, baby. You've handled harder things than this. I believe in you.",
+                    "Take a 5-minute break. Drink some water. Your productivity doesn't define your value.",
+                    "I'm so proud of how hard you work for us. But don't forget to rest.",
+                    "If stress was a person, I'd fight it for you. You've got this!",
+                    "Close your eyes and think of our favorite spot. Imagine us just sitting there, quiet."
+                ]},
+                { id: 4, name: "Open When You Feel Lonely", icon: "🏠", letters: [
+                    "You are never alone. You carry my heart inside yours wherever you go.",
+                    "I'm just a text or call away. Reach out, I'll always answer.",
+                    "Think of our last hug. Can you feel it? I'm holding you tight.",
+                    "I'm your home, and home is always with you. Don't feel lonely, my love.",
+                    "I'm sending 1000 virtual kisses. Did you catch them?"
+                ]},
+                { id: 5, name: "Open When You Need Motivation", icon: "⚡", letters: [
+                    "You are capable of incredible things. Go show them why you're the best.",
+                    "The world isn't ready for your greatness yet. Keep pushing, I'm your #1 fan.",
+                    "Success is coming, I can feel it. Don't give up now!",
+                    "Remember why you started. I'm right behind you, cheering the loudest.",
+                    "You're my hero. Heroes don't quit!"
+                ]},
+                { id: 6, name: "Open When You Can’t Sleep", icon: "🌙", letters: [
+                    "Put the phone down after this. Imagine my head on your chest and my hand in yours.",
+                    "I'm dreaming about you right now, come join me in dreamland.",
+                    "Count all the reasons I love you. You'll be asleep before you reach ten because there are too many.",
+                    "Let the silence be peaceful, not lonely. I'm right here in your heart.",
+                    "Goodnight my handsome prince. Sleep well for me."
+                ]},
+                { id: 7, name: "Open When Had a Bad Day", icon: "🌧️", letters: [
+                    "Leave the bad day at the door. Inside this website, everything is perfect.",
+                    "I wish I could bake you cookies and hold you. For now, take this virtual love.",
+                    "Tomorrow is a fresh start. Today is over. You survived it, and I'm proud.",
+                    "You're still my favorite person, even on your worst days.",
+                    "Let's talk about it whenever you're ready. I'm listening."
+                ]},
+                { id: 8, name: "Open When Overthinking", icon: "🌀", letters: [
+                    "Quiet your mind. My love for you is the only certain thing you need to know.",
+                    "It's going to be okay. Your brain is just being a bully. I love you.",
+                    "Don't create problems that don't exist. We are solid. We are us.",
+                    "I'm not going anywhere. You are enough. You are more than enough.",
+                    "Take a deep breath. Focus on my voice in your head saying 'I love you'."
+                ]},
+                { id: 9, name: "Open When You Need to Smile", icon: "😊", letters: [
+                    "Remember that time we laughed so hard? Yeah, that one. I love your smile.",
+                    "You have the cutest nose. And eyes. And... everything.",
+                    "Guess what? You're stuck with me. Forever. Does that make you smile?",
+                    "I'm looking at your picture right now and I'm blushing. You're so hot.",
+                    "You're the 'GG' to my life. Get it? Gamer joke for my favorite guy."
+                ]},
+                { id: 10, name: "Open When You Need a Hug", icon: "🧸", letters: [
+                    "Wrap your arms around yourself. That's me giving you a squeeze.",
+                    "I'm saving up all my hugs for the next time I see you. It's going to be a long one.",
+                    "Consider this a 'Hug Voucher'. Redeemable immediately and infinitely.",
+                    "I'm leaning my head on your shoulder right now. Feel that?",
+                    "Hugs are the best medicine, and I have an unlimited supply for you."
+                ]},
+                { id: 11, name: "Open When You Doubt Yourself", icon: "💎", letters: [
+                    "If you could see yourself through my eyes, you'd never doubt yourself again.",
+                    "You are smart, talented, and so incredibly kind. Don't forget that.",
+                    "Mistakes don't define you. Your heart does. And you have the best heart.",
+                    "I believe in you more than I believe in anything else.",
+                    "You're my MVP. Every single day."
+                ]},
+                { id: 12, name: "Open When We Fight", icon: "⚔️", letters: [
+                    "I’m sorry. Even when I’m mad, I still love you. Let's fix this.",
+                    "I hate it when we're not okay. Can we please cuddle and forget the words?",
+                    "Arguments are temporary, but we are forever. I'm ready to listen.",
+                    "I don't want to win a fight, I want to win with you. I love you.",
+                    "Sending a white flag. Peace treaty? I miss my best friend."
+                ]},
+                { id: 13, name: "Open When You Feel Tired", icon: "🔋", letters: [
+                    "Rest your eyes. You work so hard. You deserve a break.",
+                    "I'll be the one to take care of things while you rest. Just relax.",
+                    "Your health and peace are more important than anything. Sleep, my love.",
+                    "I wish I could massage your shoulders right now.",
+                    "Close your eyes and listen to your heartbeat. That's my rhythm too."
+                ]},
+                { id: 14, name: "Open When You Need Love", icon: "💖", letters: [
+                    "I love you more than all the stars in the sky and all the water in the ocean.",
+                    "You are my person. My home. My everything.",
+                    "I fell in love with you for a million tiny reasons I'm still discovering.",
+                    "Being yours is the best thing that ever happened to me.",
+                    "You are the love of my life. Period."
+                ]},
+                { id: 15, name: "Open When You’re Jealous", icon: "🤨", letters: [
+                    "You're the only one I want. No one else even comes close.",
+                    "My eyes only see you. Everyone else is just background noise.",
+                    "You're my King. Why would I ever look at a peasant? Lol.",
+                    "I'm obsessed with you. Don't worry about anyone else.",
+                    "You have my whole heart. There's no room for anyone else there."
+                ]},
+                { id: 16, name: "Open When You Lose in a Game", icon: "🎮", letters: [
+                    "It’s okay! You’re still the Pro in my heart.",
+                    "Even the best players have off days. You'll carry the next one!",
+                    "Don't tilt, baby. It's just a game. You've already won the biggest prize: Me!",
+                    "Want me to come distract you? Or maybe help you level up?",
+                    "I'll be your support/healer forever. Don't be sad."
+                ]},
+                { id: 17, name: "Open On Your Birthday", icon: "🎂", letters: [
+                    "Happy Birthday to the man who makes my world turn! I'm so glad you were born.",
+                    "Another year of you being the most amazing human. I'm so lucky to be by your side.",
+                    "I hope all your dreams come true, because you are a dream come true for me.",
+                    "Let's make this your best year yet. I love you, birthday boy!",
+                    "I have a special gift for you... it involves lots of kisses."
+                ]},
+                { id: 18, name: "Open When You Feel Unloved", icon: "💔", letters: [
+                    "How could you ever feel unloved when I'm so crazy about you?",
+                    "If you ever feel this way, look at this website. Every word is proof of my love.",
+                    "I love you even when you're at your worst. Especially then.",
+                    "You are cherished. You are wanted. You are mine.",
+                    "Never doubt my love. It's the strongest thing I own."
+                ]},
+                { id: 19, name: "Open Anytime", icon: "✨", letters: [
+                    "Just a random reminder: You are incredibly handsome and I'm lucky.",
+                    "I love the way you laugh. It's my favorite sound.",
+                    "Thank you for being you. You make life so much better.",
+                    "I'm so excited for our future together. Imagine our own little home.",
+                    "I love you. Just felt like saying it."
+                ]}
+            ]
+        };
+
+        /* 
+           =========================================
+           --- CORE FUNCTIONALITY (DO NOT EDIT) ---
+           =========================================
+        */
+
+        let currentCat = null;
+        let currentLetterIdx = 0;
+        let readLetters = JSON.parse(localStorage.getItem('readLetters')) || {};
+
+        // 1. Password Logic
+        function checkPassword() {
+            const input = document.getElementById('passwordInput').value;
+            if (input.toLowerCase() === CONFIG.password.toLowerCase()) {
+                document.getElementById('lock-screen').style.transform = 'translateY(-100%)';
+                document.getElementById('main-content').style.display = 'block';
+                initApp();
+            } else {
+                document.getElementById('error-msg').style.display = 'block';
+            }
+        }
+
+        // 2. Initialize App
+        function initApp() {
+            createHearts();
+            updateCounter();
+            renderCategories(CONFIG.categories);
+            updateProgress();
+            document.getElementById('footerNames').innerText = CONFIG.names;
+            document.getElementById('mainTitle').innerText = `For My ${CONFIG.names.split(' ')[0] || 'Love'}`;
+        }
+
+        // 3. Heart Animation
+        function createHearts() {
+            const container = document.getElementById('heartContainer');
+            setInterval(() => {
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                container.appendChild(heart);
+                setTimeout(() => heart.remove(), 6000);
+            }, 500);
+        }
+
+        // 4. Anniversary Counter
+        function updateCounter() {
+            const start = new Date(CONFIG.anniversaryDate);
+            const now = new Date();
+            const diff = Math.floor((now - start) / (1000 * 60 * 60 * 24));
+            document.getElementById('daysCounter').innerText = `${diff} Days of Loving You`;
+        }
+
+        // 5. Render Categories
+        function renderCategories(cats) {
+            const grid = document.getElementById('categoryGrid');
+            grid.innerHTML = '';
+            cats.forEach(cat => {
+                const card = document.createElement('div');
+                card.classList.add('category-card');
+                card.onclick = () => openCategory(cat.id);
+                card.innerHTML = `
+                    <span class="icon">${cat.icon}</span>
+                    <strong>${cat.name}</strong>
+                    <p style="font-size:0.8rem; margin-top:5px; opacity:0.6">${cat.letters.length} letters</p>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // 6. Search
+        function filterCategories() {
+            const term = document.getElementById('searchBar').value.toLowerCase();
+            const filtered = CONFIG.categories.filter(c => c.name.toLowerCase().includes(term));
+            renderCategories(filtered);
+        }
+
+        // 7. Modal Logic
+        function openCategory(id) {
+            currentCat = CONFIG.categories.find(c => c.id === id);
+            currentLetterIdx = 0;
+            showLetter();
+        }
+
+        function showLetter() {
+            const modal = document.getElementById('letterModal');
+            document.getElementById('modalTitle').innerText = currentCat.name;
+            document.getElementById('letterBody').innerText = currentCat.letters[currentLetterIdx];
+            
+            // Check if read
+            const letterId = `${currentCat.id}-${currentLetterIdx}`;
+            const btn = document.getElementById('readBtn');
+            btn.innerText = readLetters[letterId] ? "Read ✓" : "Mark as Read ✓";
+            btn.style.opacity = readLetters[letterId] ? "0.5" : "1";
+
+            modal.style.display = 'flex';
+        }
+
+        function nextLetter() {
+            currentLetterIdx = (currentLetterIdx + 1) % currentCat.letters.length;
+            showLetter();
+        }
+
+        function prevLetter() {
+            currentLetterIdx = (currentLetterIdx - 1 + currentCat.letters.length) % currentCat.letters.length;
+            showLetter();
+        }
+
+        function openRandomLetter() {
+            const cat = CONFIG.categories[Math.floor(Math.random() * CONFIG.categories.length)];
+            currentCat = cat;
+            currentLetterIdx = Math.floor(Math.random() * cat.letters.length);
+            showLetter();
+        }
+
+        function closeModal() {
+            document.getElementById('letterModal').style.display = 'none';
+        }
+
+        // 8. Progress & Storage
+        function markAsRead() {
+            const letterId = `${currentCat.id}-${currentLetterIdx}`;
+            readLetters[letterId] = true;
+            localStorage.setItem('readLetters', JSON.stringify(readLetters));
+            updateProgress();
+            showLetter();
+        }
+
+        function updateProgress() {
+            const total = CONFIG.categories.reduce((acc, cat) => acc + cat.letters.length, 0);
+            const read = Object.keys(readLetters).length;
+            const percent = Math.round((read / total) * 100);
+            document.getElementById('progress-bar').style.width = percent + '%';
+            document.getElementById('statsText').innerText = `${percent}% of our story read (${read}/${total} letters)`;
+        }
+
+        // 9. Music Toggle
+        let isPlaying = false;
+        const music = document.getElementById('bgMusic');
+        function toggleMusic() {
+            if (isPlaying) {
+                music.pause();
+                document.getElementById('musicBtn').innerText = "🎵 Play Music";
+            } else {
+                music.play();
+                document.getElementById('musicBtn').innerText = "🎶 Pause Music";
+            }
+            isPlaying = !isPlaying;
+        }
+
+        // Close modal on outside click
+        window.onclick = (e) => {
+            if(e.target == document.getElementById('letterModal')) closeModal();
+        }
+    </script>
+</body>
+</html>
