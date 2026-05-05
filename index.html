@@ -219,11 +219,15 @@
         </div>
     </div>
 
-    <!-- Background Music (Editable Link) -->
-    <audio id="bgMusic" loop>
-        <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-    </audio>
-
+   <div class="controls">
+    <input type="text" id="searchBar" placeholder="Search a mood..." onkeyup="filterCategories()">
+    <button onclick="openRandomLetter()">Surprise Me! 🎲</button>
+    
+    <!-- This is your new Spotify Player -->
+    <div style="margin-top: 20px; width: 100%;">
+        <iframe data-testid="embed-iframe" style="border-radius:12px" src="https://open.spotify.com/embed/playlist/2gr2lo1awkwQbIB7o7ORJd?utm_source=generator&theme=0" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+    </div>
+</div>
     <script>
         /* 
            =========================================
@@ -231,104 +235,104 @@
            =========================================
         */
         const CONFIG = {
-            password: "love", // CHANGE THIS
-            names: "Us Forever",
-            anniversaryDate: "2023-05-15", // YYYY-MM-DD format
+            password: "HONEYBUNCHSUGARPLUM", // CHANGE THIS
+            names: "MY HOME",
+            anniversaryDate: "2025-08-27", // YYYY-MM-DD format
             musicLink: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
             categories: [
-                { id: 0, name: "Open When You Miss Me", icon: "🥺", letters: [
-                    "I miss you more than words can say. Close your eyes, I'm hugging you right now.",
-                    "Missing you is my heart's way of reminding me how much I love you. Can't wait to see you.",
-                    "If you're reading this, I'm probably thinking about you at this exact second too.",
-                    "Look at the moon. We are both under the same sky, breathing the same air. I'm right there with you.",
-                    "Missing you is like a game... but one where I really want to win a hug from you."
+                { id: 0, name: "Open When You Miss Me", icon: "💖", letters: [
+                    "Langga, as August gets closer, I find myself missing you even more because I know college is about to start. It scares me a little bit thinking about how busy you’ll be with your new schedule and your classes, but I know you’re going to be so amazing. I’ll miss our spontaneous dates the most, but I promise to be your biggest cheerleader from afar. Even if we’re in different places, my heart is always right there in your pocket. I love you, my soon-to-be college boy!",
+                    "My love, I’m already missing you so much and you haven't even left for college yet. Thinking about you being in a different environment this August makes me want to hold onto you even tighter. LDR isn't easy, and I know college time will be a huge adjustment for us, but we can do this, baby. I’ll be here waiting for your calls after your long day of classes. You’re my person, and no distance or busy schedule can ever change that.",
+                    "Hello, my handsome langga... I just wanted to tell you that I love you so much and I’m missing you extra today. I miss our late-night talks and the way you always know exactly how to make me smile. I feel so empty when we’re apart, but I keep holding on to the memories we’ve made. You are my everything, love. Please never forget how much I adore you and how much I’m longing for your touch right now.",
+                    "My baby, I miss you so much it feels like I’m holding my breath until I see you again. With college starting soon, I know our time will feel different, but my love for you will stay exactly the same. I’ll be missing you through every lecture and every study session. You are my motivation and my favorite daydream. I love you so much, langga, and I’m going to be right here waiting for you through it all.",
+                    "Baby, I miss you so much that it's getting hard to focus on anything else. I just want to crawl into your arms and stay there for a thousand years. You have no idea how much you mean to me, langga. My life was so different before you came along, and now I can't imagine a single day without you. You are the best thing that ever happened to me, and I miss you with every single beat of my heart."
                     /* Add 45 more here... */
                 ]},
-                { id: 1, name: "Open When You’re Sad", icon: "🫂", letters: [
+                { id: 1, name: "Open When You’re Sad", icon: "💖", letters: [
                     "I wish I could be there to wipe your tears. Remember you are the strongest man I know.",
                     "It’s okay to not be okay. I am your safe space, always. Come to me.",
                     "Hey handsome, don't let the world dull your sparkle. You are my sunshine.",
                     "I made a list of why you're amazing: 1. You're kind. 2. You're mine. 3. You're perfect.",
                     "Eat a chocolate, take a nap, and remember I love you more than anything."
                 ]},
-                { id: 2, name: "Open When You’re Angry", icon: "😤", letters: [
+                { id: 2, name: "Open When You’re Angry", icon: "💖", letters: [
                     "Deep breaths. Don't let them get to you. You are better than whatever is bothering you.",
                     "I'm on your side. Even if the whole world is against you, I'm your teammate.",
                     "Go play a game, vent it out, and then come back to me. I'll be waiting with kisses.",
                     "If someone was mean to you, tell me their name. I'll... give them a very stern look!",
                     "You're cute when you're grumpy, but I prefer when you're happy. Let's let it go."
                 ]},
-                { id: 3, name: "Open When You’re Stressed", icon: "😫", letters: [
+                { id: 3, name: "Open When You’re Stressed", icon: "💖", letters: [
                     "One step at a time, baby. You've handled harder things than this. I believe in you.",
                     "Take a 5-minute break. Drink some water. Your productivity doesn't define your value.",
                     "I'm so proud of how hard you work for us. But don't forget to rest.",
                     "If stress was a person, I'd fight it for you. You've got this!",
                     "Close your eyes and think of our favorite spot. Imagine us just sitting there, quiet."
                 ]},
-                { id: 4, name: "Open When You Feel Lonely", icon: "🏠", letters: [
+                { id: 4, name: "Open When You Feel Lonely", icon: "💖", letters: [
                     "You are never alone. You carry my heart inside yours wherever you go.",
                     "I'm just a text or call away. Reach out, I'll always answer.",
                     "Think of our last hug. Can you feel it? I'm holding you tight.",
                     "I'm your home, and home is always with you. Don't feel lonely, my love.",
                     "I'm sending 1000 virtual kisses. Did you catch them?"
                 ]},
-                { id: 5, name: "Open When You Need Motivation", icon: "⚡", letters: [
+                { id: 5, name: "Open When You Need Motivation", icon: "💖", letters: [
                     "You are capable of incredible things. Go show them why you're the best.",
                     "The world isn't ready for your greatness yet. Keep pushing, I'm your #1 fan.",
                     "Success is coming, I can feel it. Don't give up now!",
                     "Remember why you started. I'm right behind you, cheering the loudest.",
                     "You're my hero. Heroes don't quit!"
                 ]},
-                { id: 6, name: "Open When You Can’t Sleep", icon: "🌙", letters: [
+                { id: 6, name: "Open When You Can’t Sleep", icon: "💖", letters: [
                     "Put the phone down after this. Imagine my head on your chest and my hand in yours.",
                     "I'm dreaming about you right now, come join me in dreamland.",
                     "Count all the reasons I love you. You'll be asleep before you reach ten because there are too many.",
                     "Let the silence be peaceful, not lonely. I'm right here in your heart.",
                     "Goodnight my handsome prince. Sleep well for me."
                 ]},
-                { id: 7, name: "Open When Had a Bad Day", icon: "🌧️", letters: [
+                { id: 7, name: "Open When Had a Bad Day", icon: "💖", letters: [
                     "Leave the bad day at the door. Inside this website, everything is perfect.",
                     "I wish I could bake you cookies and hold you. For now, take this virtual love.",
                     "Tomorrow is a fresh start. Today is over. You survived it, and I'm proud.",
                     "You're still my favorite person, even on your worst days.",
                     "Let's talk about it whenever you're ready. I'm listening."
                 ]},
-                { id: 8, name: "Open When Overthinking", icon: "🌀", letters: [
+                { id: 8, name: "Open When Overthinking", icon: "💖", letters: [
                     "Quiet your mind. My love for you is the only certain thing you need to know.",
                     "It's going to be okay. Your brain is just being a bully. I love you.",
                     "Don't create problems that don't exist. We are solid. We are us.",
                     "I'm not going anywhere. You are enough. You are more than enough.",
                     "Take a deep breath. Focus on my voice in your head saying 'I love you'."
                 ]},
-                { id: 9, name: "Open When You Need to Smile", icon: "😊", letters: [
+                { id: 9, name: "Open When You Need to Smile", icon: "💖", letters: [
                     "Remember that time we laughed so hard? Yeah, that one. I love your smile.",
                     "You have the cutest nose. And eyes. And... everything.",
                     "Guess what? You're stuck with me. Forever. Does that make you smile?",
                     "I'm looking at your picture right now and I'm blushing. You're so hot.",
                     "You're the 'GG' to my life. Get it? Gamer joke for my favorite guy."
                 ]},
-                { id: 10, name: "Open When You Need a Hug", icon: "🧸", letters: [
+                { id: 10, name: "Open When You Need a Hug", icon: "💖", letters: [
                     "Wrap your arms around yourself. That's me giving you a squeeze.",
                     "I'm saving up all my hugs for the next time I see you. It's going to be a long one.",
                     "Consider this a 'Hug Voucher'. Redeemable immediately and infinitely.",
                     "I'm leaning my head on your shoulder right now. Feel that?",
                     "Hugs are the best medicine, and I have an unlimited supply for you."
                 ]},
-                { id: 11, name: "Open When You Doubt Yourself", icon: "💎", letters: [
+                { id: 11, name: "Open When You Doubt Yourself", icon: "💖", letters: [
                     "If you could see yourself through my eyes, you'd never doubt yourself again.",
                     "You are smart, talented, and so incredibly kind. Don't forget that.",
                     "Mistakes don't define you. Your heart does. And you have the best heart.",
                     "I believe in you more than I believe in anything else.",
                     "You're my MVP. Every single day."
                 ]},
-                { id: 12, name: "Open When We Fight", icon: "⚔️", letters: [
+                { id: 12, name: "Open When We Fight", icon: "💖", letters: [
                     "I’m sorry. Even when I’m mad, I still love you. Let's fix this.",
                     "I hate it when we're not okay. Can we please cuddle and forget the words?",
                     "Arguments are temporary, but we are forever. I'm ready to listen.",
                     "I don't want to win a fight, I want to win with you. I love you.",
                     "Sending a white flag. Peace treaty? I miss my best friend."
                 ]},
-                { id: 13, name: "Open When You Feel Tired", icon: "🔋", letters: [
+                { id: 13, name: "Open When You Feel Tired", icon: "💖", letters: [
                     "Rest your eyes. You work so hard. You deserve a break.",
                     "I'll be the one to take care of things while you rest. Just relax.",
                     "Your health and peace are more important than anything. Sleep, my love.",
@@ -342,21 +346,21 @@
                     "Being yours is the best thing that ever happened to me.",
                     "You are the love of my life. Period."
                 ]},
-                { id: 15, name: "Open When You’re Jealous", icon: "🤨", letters: [
+                { id: 15, name: "Open When You’re Jealous", icon: "💖", letters: [
                     "You're the only one I want. No one else even comes close.",
                     "My eyes only see you. Everyone else is just background noise.",
                     "You're my King. Why would I ever look at a peasant? Lol.",
                     "I'm obsessed with you. Don't worry about anyone else.",
                     "You have my whole heart. There's no room for anyone else there."
                 ]},
-                { id: 16, name: "Open When You Lose in a Game", icon: "🎮", letters: [
+                { id: 16, name: "Open When You Lose in a Game", icon: "💖", letters: [
                     "It’s okay! You’re still the Pro in my heart.",
                     "Even the best players have off days. You'll carry the next one!",
                     "Don't tilt, baby. It's just a game. You've already won the biggest prize: Me!",
                     "Want me to come distract you? Or maybe help you level up?",
                     "I'll be your support/healer forever. Don't be sad."
                 ]},
-                { id: 17, name: "Open On Your Birthday", icon: "🎂", letters: [
+                { id: 17, name: "Open On Your Birthday", icon: "💖", letters: [
                     "Happy Birthday to the man who makes my world turn! I'm so glad you were born.",
                     "Another year of you being the most amazing human. I'm so lucky to be by your side.",
                     "I hope all your dreams come true, because you are a dream come true for me.",
